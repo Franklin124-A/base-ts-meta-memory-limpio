@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node ./dist/app.js ",
     "lint": "eslint . --no-ignore",
-    "dev": "npm run lint && kill-port 3008 && nodemon --delay 1500ms ./src/app.ts",
+    "dev": "npx kill-port 3008 && npx nodemon --delay 1500ms ./src/app.ts",
     "build": "npx rollup -c"
   },
   "keywords": [],

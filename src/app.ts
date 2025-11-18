@@ -239,8 +239,7 @@ const main = async () => {
         jwtToken: process.env.META_ACCESS_TOKEN,     // <-- CAMBIADO: Usa el nombre del .env
         numberId: process.env.META_PHONE_NUMBER_ID, // <-- CAMBIADO: Usa el nombre del .env
         verifyToken: process.env.VERIFY_TOKEN,      // <-- CAMBIADO: Usa el nombre del .env
-        version: 'v22.0',                           // <-- Mantén la versión que necesitas
-        appSecret: process.env.META_APP_SECRET      // <-- AÑADIDO: Necesitas añadir el App Secret
+        version: 'v22.0',                           // <-- Mantén la versión que necesitas   // <-- AÑADIDO: Necesitas añadir el App Secret
       });
     
     const adapterDB = new Database()
@@ -282,7 +281,23 @@ const main = async () => {
             return res.end(JSON.stringify({ status: 'ok', number, intent }))
         })
     )
-    
+    // ✅ Endpoint requerido por Meta para verificar el webhook
+  adapterProvider.server.get('/webhook', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === process.env.VERIFY_TOKEN) {
+      console.log('✅ WEBHOOK VERIFICADO CORRECTAMENTE');
+      return res.status(200).send(challenge);
+    } else {
+      return res.sendStatus(403);
+    }
+  }
+  return res.sendStatus(400);
+});
+
 
     httpServer(+PORT)
 }
